@@ -26,14 +26,16 @@ app.post('/produto', async(req,resp) => {
         if(produto == '' || categoria == '' || precoDe == 0 || precoPor == 0 || avaliacao == 0 || descricao == '' || estoque <= 0 || imagem == ''){
             resp.send({erro: 'Campo não inserido ou caracter invalido'} )}
         
-        
         let s = await db.tb_produto.findOne({ where: { nm_produto: produto} });
         if (s != null){return resp.send({ erro: 'Produto ja Cadastrado' }); }
                
 
         if(isNaN(Number(avaliacao)) || isNaN(Number(estoque)) || isNaN(Number(precoDe)) || isNaN(Number(precoPor))){
-            resp.send({erro: 'Campo "Avaliação", "Estoque", "Preço De" ou "Preço Por" necessitam de um valor númerico'})
+            resp.send({erro: 'Campo não inserido ou caracter invalido'})
         }
+
+        if(Math.sign(precoDe) == Math.sign(-1) || Math.sign(precoPor) == Math.sign(-1) || Math.sign(estoque) == Math.sign(-1) || Math.sign(avaliacao) == Math.sign(-1)){
+            resp.send({erro: 'Campo não inserido ou caracter invalido'} )} 
          else{
             let ins = await
             db.tb_produto.create({
@@ -64,7 +66,11 @@ app.put('/produto/:id', async(req,resp) => {
                 resp.send({erro: 'Campo não inserido ou caracter invalido'} )}
     
             if(isNaN(Number(avaliacao)) || isNaN(Number(estoque)) || isNaN(Number(precoDe)) || isNaN(Number(precoPor))){
-                resp.send({erro: 'Campo "Avaliação", "Estoque", "Preço De" ou "Preço Por" necessitam de um valor númerico'})}
+                resp.send({erro: 'Campo não inserido ou caracter invalido'})}
+
+            if(Math.sign(chamada) == Math.sign(-1)){
+                resp.send({erro: 'Campo não inserido ou caracter invalido'} )} 
+
              else{
                 let up = await db.tb_produto.update(
                     {

@@ -23,7 +23,19 @@ app.get('/produto', async(req,resp) => {
 app.post('/produto', async(req,resp) => {
     try{
         let { produto, categoria, precoDe, precoPor, avaliacao, descricao, estoque, imagem, ativo, inclusao } = req.body;
-        let ins = await
+        if(produto == '' || categoria == '' || precoDe == 0 || precoPor == 0 || avaliacao == 0 || descricao == '' || estoque <= 0 || imagem == ''){
+            resp.send({erro: 'Campo não inserido ou caracter invalido'} )}
+        
+        
+        let s = await db.tb_produto.findOne({ where: { nm_produto: produto} });
+        if (s != null){return resp.send({ erro: 'Produto ja Cadastrado' }); }
+               
+
+        if(isNaN(Number(avaliacao)) || isNaN(Number(estoque)) || isNaN(Number(precoDe)) || isNaN(Number(precoPor))){
+            resp.send({erro: 'Campo "Avaliação", "Estoque", "Preço De" ou "Preço Por" necessitam de um valor númerico'})
+        }
+         else{
+            let ins = await
             db.tb_produto.create({
                 nm_produto: produto,
                 ds_categoria: categoria,
@@ -36,35 +48,43 @@ app.post('/produto', async(req,resp) => {
                 bt_ativo: ativo,
                 dt_inclusao: inclusao
             });
-        resp.send(ins);
+            resp.send(ins);
+         }
+        
     } catch(e){
-        resp.send({erro: e.toString()})
+        resp.send({erro: 'erro'})
     }
 })
 
 app.put('/produto/:id', async(req,resp) => {
     try{
         let { produto, categoria, precoDe, precoPor, avaliacao, descricao, estoque, imagem, ativo, inclusao } = req.body;
-        let{id} = req.params;
-        let up = await
-            db.tb_produto.update(
-                {
-                    nm_produto: produto,
-                    ds_categoria: categoria,
-                    vl_preco_de: precoDe,
-                    vl_preco_por: precoPor,
-                    vl_avaliacao: avaliacao,
-                    ds_produto: descricao,
-                    qtd_estoque: estoque,
-                    img_produto: imagem,
-                    bt_ativo: ativo,
-                    dt_inclusao: inclusao
-                },
-                {
-                    where:{id_produto: id}
-                }
-            )
-        resp.sendStatus(200);
+            let{id} = req.params;
+            if(produto == '' || categoria == '' || precoDe == 0 || precoPor == 0 || avaliacao == 0 || descricao == '' || estoque <= 0 || imagem == ''){
+                resp.send({erro: 'Campo não inserido ou caracter invalido'} )}
+    
+            if(isNaN(Number(avaliacao)) || isNaN(Number(estoque)) || isNaN(Number(precoDe)) || isNaN(Number(precoPor))){
+                resp.send({erro: 'Campo "Avaliação", "Estoque", "Preço De" ou "Preço Por" necessitam de um valor númerico'})}
+             else{
+                let up = await db.tb_produto.update(
+                    {
+                        nm_produto: produto,
+                        ds_categoria: categoria,
+                        vl_preco_de: precoDe,
+                        vl_preco_por: precoPor,
+                        vl_avaliacao: avaliacao,
+                        ds_produto: descricao,
+                        qtd_estoque: estoque,
+                        img_produto: imagem,
+                        bt_ativo: ativo,
+                        dt_inclusao: inclusao
+                    },
+                    {
+                        where:{id_produto: id}
+                    }
+                )
+            resp.sendStatus(200);
+            }
     } catch(e){
         resp.send({erro: e.toString()})
     }

@@ -68,7 +68,7 @@ app.put('/produto/:id', async(req,resp) => {
             if(isNaN(Number(avaliacao)) || isNaN(Number(estoque)) || isNaN(Number(precoDe)) || isNaN(Number(precoPor))){
                 resp.send({erro: 'Campo não inserido ou caracter invalido'})}
 
-            if(Math.sign(chamada) == Math.sign(-1)){
+            if(Math.sign(precoDe) == Math.sign(-1) || Math.sign(precoPor) == Math.sign(-1) || Math.sign(estoque) == Math.sign(-1) || Math.sign(avaliacao) == Math.sign(-1)){
                 resp.send({erro: 'Campo não inserido ou caracter invalido'} )} 
 
              else{
